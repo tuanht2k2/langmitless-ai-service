@@ -1,5 +1,6 @@
 package langmitless.ai.config;
 
+import jakarta.annotation.Resource;
 import langmitless.ai.JWT.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,10 +24,10 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
+    @Resource
     JWTAuthenticationFilter jwtAuthenticationFilter;
 
-    public static String[] PUBLIC_END_POINTS = {"/api/v1/ai/upsert-course-vector"};
+    public static String[] PUBLIC_END_POINTS = {"api/v1/dialogFlow","api/v1/dialogFlow/*", "api/v1/dialogFlow/listener"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

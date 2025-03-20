@@ -155,7 +155,13 @@
 			<artifactId>pytorch-engine</artifactId>
 			<version>0.31.1</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-dialogflow</artifactId>
+            <version>4.65.0</version>
+        </dependency>
+
+    </dependencies>
 
 	<build>
 		<plugins>
