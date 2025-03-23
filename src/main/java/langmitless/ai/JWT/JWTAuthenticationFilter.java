@@ -30,7 +30,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         if (!hasAuthorizationBearer(request)) {
             filterChain.doFilter(request, response);
-            return;
+            throw new CustomException(EError.UNAUTHORIZED);
         }
         String token = getToken(request);
         if (!jwtUtil.validateToken(token)) {
@@ -54,7 +54,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private void setAuthenticationContext (String token, HttpServletRequest request) {
         Account account = getAccount(token);
 
-        UsernamePasswordAuthenticationToken authentication  = new UsernamePasswordAuthenticationToken(account, null , null);
+        UsernamePasswordAuthenticationToken authentication  = new UsernamePasswordAuthenticationToken(account, token , null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
