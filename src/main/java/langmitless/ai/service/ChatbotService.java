@@ -13,6 +13,7 @@ import langmitless.ai.service.interfaces.BusinessServiceProxy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -38,11 +39,26 @@ public class ChatbotService {
 
     public Response<Object> ask (String message) {
         try {
+            queryCourses(message);
+
+
+            return Response.getResponse(200,"Ask chatbot successfully!");
+        } catch (CustomException e) {
+            return Response.getResponse(400, e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return Response.getResponse(500, e.getMessage());
+        }
+    }
+
+    @Async
+    public void queryCourses (String message) {
+        try {
             Account account = authService.getCurrentAccount();
             QueryResult result = detectIntent(message, account.getId());
             if (ObjectUtils.isEmpty(result)) {
-                log.error("An error happened when get response from dialogFlow");
-                return Response.getResponse(500, "An error happened when get response from dialogFlow");
+                log.error("An error happened when get response from dialogFlow in queryCourses");
+                return;
             }
             AiSearchCourseRequest searchCourseRequest = new AiSearchCourseRequest();
             String fulfillmentText = result.getFulfillmentText();
@@ -56,18 +72,9 @@ public class ChatbotService {
                 searchCourseRequest.setCost(cost);
                 searchCourseRequest.setLevel(Byte.parseByte(level));
             }
-
-            Response<Object> response = businessServiceProxy.searchCourse(searchCourseRequest);
-            if (ObjectUtils.isEmpty(response) || !response.getCode().equals(200)) {
-                throw new CustomException(EError.SERVICE_ERROR);
-            }
-
-            return Response.getResponse(200,"Ask chatbot successfully!");
-        } catch (CustomException e) {
-            return Response.getResponse(400, e.getMessage());
+            businessServiceProxy.searchCourse(searchCourseRequest);
         } catch (Exception e) {
-            log.error(e.getMessage());
-            return Response.getResponse(500, e.getMessage());
+            log.error("An error occurred when queryCourses: {}", e.getMessage());
         }
     }
 

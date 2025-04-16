@@ -16,7 +16,7 @@ public class ChatbotController {
     private ChatbotService chatbotService;
 
     @PostMapping("ask")
-    public Response<Object> getResponse(@RequestBody String input) {
+    public Response<Object> ask(@RequestBody String input) {
         return chatbotService.ask(input);
     }
 }
